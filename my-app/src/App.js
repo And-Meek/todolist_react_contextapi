@@ -1,25 +1,34 @@
-import logo from './logo.svg';
+import themeIcon from './brightness-and-contrast.png';
 import './App.css';
+import { useState, useEffect } from 'react';
 
 export const App = () => {
-	const currentYear = new Date().getFullYear();
+	const [tasks, setTasks] = useState([]);
+	const [theme, setTheme] = useState('dark');
+	const changeTheme = () => {
+		if (theme === 'dark') {
+			setTheme('light');
+		} else {
+			setTheme('dark');
+		}
+	};
+
+	useEffect(() => {
+		fetch('https://jsonplaceholder.typicode.com/todos')
+			.then((loadedData) => loadedData.json())
+			.then((loadedTasks) => {
+				setTasks(loadedTasks);
+			});
+	});
 	return (
-		<div className="App">
-			<header className="App-header">
-				<img src={logo} className="App-logo" alt="logo" />
-				<p>
-					Edit <code>src/App.js</code> and save to reload.
-				</p>
-				<a
-					className="App-link"
-					href="https://reactjs.org"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Learn React
-				</a>
-				<p>{currentYear}</p>
-			</header>
+		<div className={`${'App'} ${theme === 'dark' ? 'Dark' : 'Light'}`}>
+			<img src={themeIcon} className="img" alt="toggleTheme" onClick={changeTheme} />
+			<span>Todos list</span>
+			{tasks.map(({ userId, id, title, completed }) => (
+				<div className="List" key={id}>
+					{title}
+				</div>
+			))}
 		</div>
 	);
 };
