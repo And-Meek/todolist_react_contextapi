@@ -71,7 +71,6 @@ export const useRequestGetTasks = (refreshTasksFlag) => {
 		filteredTasks,
 		setFilteredTasks,
 		isLoading,
-		isSorted,
 		requestSortTask,
 		requestFindTask,
 	};
