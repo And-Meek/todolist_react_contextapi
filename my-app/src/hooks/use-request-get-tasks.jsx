@@ -17,17 +17,7 @@ export const useRequestGetTasks = () => {
 			const loadedTasksMassive = Object.entries(loadedTasks);
 			setTasks(loadedTasksMassive);
 			const futureSort = [...loadedTasksMassive];
-			setSortTasks(
-				futureSort.sort((a, b) => {
-					if (a[1].title < b[1].title) {
-						return -1;
-					}
-					if (a[1].title > b[1].title) {
-						return 1;
-					}
-					return 0;
-				}),
-			);
+			setSortTasks(futureSort.toSorted((a, b) => a[1].title.localeCompare(b[1].title)));
 			setFilteredTasks(loadedTasksMassive);
 			setIsLoading(false);
 		});
