@@ -1,31 +1,21 @@
-export const useRequestAddTask = (
-	setIsCreating,
-	newTask,
-	setError,
-	refreshTasks,
-	setNewTask,
-) => {
+import { ref, push } from 'firebase/database';
+import { db } from '../firebase';
+
+export const useRequestAddTask = (setIsCreating, newTask, setError, setNewTask) => {
+	const tasksDbRef = ref(db, 'tasks');
+
 	const requestAddTask = () => {
 		setIsCreating(true);
 		if (newTask === '') {
 			setError(true);
 			setIsCreating(false);
 		} else {
-			fetch('http://localhost:3005/tasks', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json; charset=utf-8' },
-				body: JSON.stringify({
-					title: newTask,
-				}),
-			})
-				.then((rawResponse) => rawResponse.json())
-				.then(() => {
-					refreshTasks();
-				})
-				.finally(() => {
-					setNewTask('');
-					setIsCreating(false);
-				});
+			push(tasksDbRef, {
+				title: newTask,
+			}).then(() => {
+				setNewTask('');
+				setIsCreating(false);
+			});
 		}
 	};
 

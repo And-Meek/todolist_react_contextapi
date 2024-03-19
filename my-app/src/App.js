@@ -13,22 +13,20 @@ import {
 export const App = () => {
 	const { theme, changeTheme } = useChangeTheme();
 	const [newTask, setNewTask] = useState('');
-	const [refreshTasksFlag, setRefreshTasksFlag] = useState(false);
 	const [isCreating, setIsCreating] = useState(false);
 	const [error, setError] = useState(false);
-	const refreshTasks = () => setRefreshTasksFlag(!refreshTasksFlag);
+
 	const { filteredTasks, isLoading, requestSortTask, requestFindTask } =
-		useRequestGetTasks(refreshTasksFlag, refreshTasks);
+		useRequestGetTasks();
 
 	const { requestAddTask } = useRequestAddTask(
 		setIsCreating,
 		newTask,
 		setError,
-		refreshTasks,
 		setNewTask,
 	);
 
-	const { requestDeleteTask } = useRequestDeleteTask(setIsCreating, refreshTasks);
+	const { requestDeleteTask } = useRequestDeleteTask(setIsCreating);
 
 	const {
 		setUpadateTask,
@@ -37,7 +35,7 @@ export const App = () => {
 		idRef,
 		updatedInputRef,
 		updateBtnRef,
-	} = useRequestUpdateTask(refreshTasks, setIsCreating);
+	} = useRequestUpdateTask(setIsCreating);
 
 	const handlerUpdateTask = ({ target }) => {
 		setUpadateTask(target.value);
@@ -85,7 +83,7 @@ export const App = () => {
 			{isLoading ? (
 				<div className="loader"></div>
 			) : (
-				filteredTasks.map(({ id, title }) => (
+				filteredTasks.map(([id, { title }]) => (
 					<div className="todosList" key={id}>
 						<input
 							ref={idRef === id ? updatedInputRef : null}

@@ -1,40 +1,37 @@
 import { useEffect, useState } from 'react';
+import { ref, onValue } from 'firebase/database';
+import { db } from '../firebase';
 
-export const useRequestGetTasks = (refreshTasksFlag) => {
+export const useRequestGetTasks = () => {
 	const [tasks, setTasks] = useState([]);
 	const [sortTasks, setSortTasks] = useState([]);
 	const [filteredTasks, setFilteredTasks] = useState([]);
-	const [isLoading, setIsLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
 	const [isSorted, setIsSorted] = useState(false);
 
 	useEffect(() => {
-		setIsLoading(true);
-		fetch('http://localhost:3005/tasks')
-			.then((loadedData) => loadedData.json())
-			.then((loadedTasks) => {
-				setTasks(loadedTasks);
-				const futureSort = [...loadedTasks];
-				const futureFind = [...loadedTasks];
-				setSortTasks(
-					futureSort.sort((a, b) => {
-						if (a.title < b.title) {
-							return -1;
-						}
-						if (a.title > b.title) {
-							return 1;
-						}
-						return 0;
-					}),
-				);
-				setFilteredTasks(futureFind);
-			})
-			.catch((error) => {
-				console.log(error);
-			})
-			.finally(() => {
-				setIsLoading(false);
-			});
-	}, [refreshTasksFlag]);
+		const tasksDbRef = ref(db, 'tasks');
+
+		return onValue(tasksDbRef, (snapshot) => {
+			const loadedTasks = snapshot.val() || {};
+			const loadedTasksMassive = Object.entries(loadedTasks);
+			setTasks(loadedTasksMassive);
+			const futureSort = [...loadedTasksMassive];
+			setSortTasks(
+				futureSort.sort((a, b) => {
+					if (a[1].title < b[1].title) {
+						return -1;
+					}
+					if (a[1].title > b[1].title) {
+						return 1;
+					}
+					return 0;
+				}),
+			);
+			setFilteredTasks(loadedTasksMassive);
+			setIsLoading(false);
+		});
+	}, []);
 
 	const requestSortTask = () => {
 		if (!isSorted) {
@@ -46,15 +43,14 @@ export const useRequestGetTasks = (refreshTasksFlag) => {
 	};
 	const requestFindTask = ({ target }) => {
 		if (target.value.length !== 0) {
-			console.log('isSorted', isSorted);
 			if (isSorted) {
 				const filteredTasksArray = sortTasks.filter((task) => {
-					return task.title.includes(target.value);
+					return task[1].title.toLowerCase().includes(target.value.toLowerCase());
 				});
 				return setFilteredTasks(filteredTasksArray);
 			} else {
 				const filteredTasksArray = tasks.filter((task) => {
-					return task.title.includes(target.value);
+					return task[1].title.toLowerCase().includes(target.value.toLowerCase());
 				});
 				return setFilteredTasks(filteredTasksArray);
 			}

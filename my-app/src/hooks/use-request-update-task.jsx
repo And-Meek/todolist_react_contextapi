@@ -1,7 +1,9 @@
 import { useState, useRef } from 'react';
 import { flushSync } from 'react-dom';
+import { ref, update } from 'firebase/database';
+import { db } from '../firebase';
 
-export const useRequestUpdateTask = (refreshTasks, setIsCreating) => {
+export const useRequestUpdateTask = (setIsCreating) => {
 	const [isUpdating, setIsUpdating] = useState(false);
 	const [updateTask, setUpadateTask] = useState('');
 	const [idRef, setIdRef] = useState(0);
@@ -23,13 +25,10 @@ export const useRequestUpdateTask = (refreshTasks, setIsCreating) => {
 	};
 
 	const requestUpdateTask = (target) => {
+		const updateTaskDbRef = ref(db, `tasks/${target.id}`);
 		setIsCreating(true);
-		fetch(`http://localhost:3005/tasks/${target.id}`, {
-			method: 'PATCH',
-			headers: { 'Content-Type': 'application/json; charset=utf-8' },
-			body: JSON.stringify({
-				title: updateTask,
-			}),
+		update(updateTaskDbRef, {
+			title: updateTask,
 		})
 			.then(() => {
 				setIsUpdating(false);
@@ -37,7 +36,6 @@ export const useRequestUpdateTask = (refreshTasks, setIsCreating) => {
 			.then(updateBtnRef.current.classList.remove('updatingTask'))
 			.finally(() => {
 				setIsCreating(false);
-				refreshTasks();
 			});
 	};
 
