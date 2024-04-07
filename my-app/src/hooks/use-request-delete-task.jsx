@@ -1,11 +1,14 @@
-import { ref, remove } from 'firebase/database';
-import { db } from '../firebase';
+import { URL, PATH } from '../constants/URL-constants';
 
-export const useRequestDeleteTask = (setIsCreating) => {
+export const useRequestDeleteTask = (setIsCreating, refreshTasks) => {
 	const requestDeleteTask = ({ target }) => {
 		const deleteTaskDbRef = ref(db, `tasks/${target.id}`);
 		setIsCreating(true);
-		remove(deleteTaskDbRef).finally(() => setIsCreating(false));
+		fetch(`${URL}/${PATH}/${target.id}`, {
+			method: 'DELETE',
+		})
+			.then(() => refreshTasks())
+			.finally(() => setIsCreating(false));
 	};
 
 	return { requestDeleteTask };

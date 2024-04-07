@@ -9,6 +9,8 @@ import {
 	useRequestGetTasks,
 	useRequestUpdateTask,
 } from './hooks';
+import { ControlPanel, Todo, Loader } from './components/index.jsx';
+import { AppContext } from './context.js';
 
 export const App = () => {
 	const { theme, changeTheme } = useChangeTheme();
@@ -47,68 +49,31 @@ export const App = () => {
 	};
 
 	return (
-		<div className={`${'App'} ${theme === 'dark' ? style.Dark : style.Light}`}>
-			<img src={themeIcon} className="img" alt="toggleTheme" onClick={changeTheme} />
-			<span>Todos list</span>
-			{error ? <span className="error">Поле не может быть пустым!</span> : ''}
-			<div className="inputMenu">
-				<input
-					className="inputTask"
-					type="text"
-					placeholder="Новая задача..."
-					onChange={handlerNewTask}
-					value={newTask}
-				></input>
-				<button
-					className={`${'createTask'} ${isCreating ? 'disabled' : ''}`}
-					onClick={requestAddTask}
-					disabled={isCreating}
-				>
-					Добавить
-				</button>
+		<AppContext.Provider
+			value={{
+				handlerNewTask,
+				error,
+				isCreating,
+				newTask,
+				requestAddTask,
+				requestFindTask,
+				requestSortTask,
+				filteredTasks,
+				isUpdating,
+				handlerUpdateTask,
+				clickOnUpdateTask,
+				requestDeleteTask,
+				updateBtnRef,
+				updatedInputRef,
+				idRef,
+			}}
+		>
+			<div className={`${'App'} ${theme === 'dark' ? style.Dark : style.Light}`}>
+				<img src={themeIcon} className="img" alt="toggleTheme" onClick={changeTheme} />
+				<span>Todos list</span>
+				<ControlPanel />
+				{isLoading ? <Loader /> : <Todo />}
 			</div>
-			<div className="searchAndSortMenu">
-				<input
-					className="inputFind"
-					type="text"
-					placeholder="Найти задачу..."
-					onChange={requestFindTask}
-				></input>
-				<button
-					className={`${'sortTask'} ${isCreating ? 'disabled' : ''}`}
-					disabled={isCreating}
-					onClick={requestSortTask}
-				></button>
-			</div>
-			{isLoading ? (
-				<div className="loader"></div>
-			) : (
-				filteredTasks.map(([id, { title }]) => (
-					<div className="todosList" key={id}>
-						<input
-							ref={idRef === id ? updatedInputRef : null}
-							className="List"
-							defaultValue={title}
-							disabled={!isUpdating}
-							id={id}
-							onChange={handlerUpdateTask}
-						></input>
-						<button
-							ref={idRef === id ? updateBtnRef : null}
-							className={`${'updateTask'} ${isCreating ? 'disabled' : ''}`}
-							id={id}
-							disabled={isCreating}
-							onClick={clickOnUpdateTask}
-						></button>
-						<button
-							className={`${'deleteTask'} ${isCreating ? 'disabled' : ''}`}
-							id={id}
-							disabled={isCreating}
-							onClick={requestDeleteTask}
-						></button>
-					</div>
-				))
-			)}
-		</div>
+		</AppContext.Provider>
 	);
 };

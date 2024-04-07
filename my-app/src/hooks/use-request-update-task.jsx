@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react';
 import { flushSync } from 'react-dom';
-import { ref, update } from 'firebase/database';
-import { db } from '../firebase';
+import { PATH, URL } from '../constants/URL-constants';
 
 export const useRequestUpdateTask = (setIsCreating) => {
 	const [isUpdating, setIsUpdating] = useState(false);
@@ -27,8 +26,12 @@ export const useRequestUpdateTask = (setIsCreating) => {
 	const requestUpdateTask = (target) => {
 		const updateTaskDbRef = ref(db, `tasks/${target.id}`);
 		setIsCreating(true);
-		update(updateTaskDbRef, {
-			title: updateTask,
+		fetch(`${URL}/${PATH}/${target.id}`, {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json; charset=utf-8' },
+			body: JSON.stringify({
+				title: updateTask,
+			}),
 		})
 			.then(() => {
 				setIsUpdating(false);

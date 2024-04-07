@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ref, onValue } from 'firebase/database';
-import { db } from '../firebase';
+import { URL, PATH } from '../constants/URL-constants';
 
 export const useRequestGetTasks = () => {
 	const [tasks, setTasks] = useState([]);
@@ -10,18 +9,33 @@ export const useRequestGetTasks = () => {
 	const [isSorted, setIsSorted] = useState(false);
 
 	useEffect(() => {
-		const tasksDbRef = ref(db, 'tasks');
-
-		return onValue(tasksDbRef, (snapshot) => {
-			const loadedTasks = snapshot.val() || {};
-			const loadedTasksMassive = Object.entries(loadedTasks);
-			setTasks(loadedTasksMassive);
-			const futureSort = [...loadedTasksMassive];
-			setSortTasks(futureSort.toSorted((a, b) => a[1].title.localeCompare(b[1].title)));
-			setFilteredTasks(loadedTasksMassive);
-			setIsLoading(false);
-		});
-	}, []);
+		setIsLoading(true);
+		fetch(`${URL}/${PATH}`)
+			.then((loadedData) => loadedData.json())
+			.then((loadedTasks) => {
+				setTasks(loadedTasks);
+				const futureSort = [...loadedTasks];
+				const futureFind = [...loadedTasks];
+				setSortTasks(
+					futureSort.sort((a, b) => {
+						if (a.title < b.title) {
+							return -1;
+						}
+						if (a.title > b.title) {
+							return 1;
+						}
+						return 0;
+					}),
+				);
+				setFilteredTasks(futureFind);
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+			.finally(() => {
+				setIsLoading(false);
+			});
+	}, [refreshTasksFlag]);
 
 	const requestSortTask = () => {
 		if (!isSorted) {
@@ -31,6 +45,7 @@ export const useRequestGetTasks = () => {
 		}
 		setIsSorted(!isSorted);
 	};
+
 	const requestFindTask = ({ target }) => {
 		if (target.value.length !== 0) {
 			if (isSorted) {
