@@ -15,11 +15,12 @@ import { AppContext } from './context.js';
 export const App = () => {
 	const { theme, changeTheme } = useChangeTheme();
 	const [newTask, setNewTask] = useState('');
+	const [refreshTasksFlag, setRefreshTasksFlag] = useState(false);
 	const [isCreating, setIsCreating] = useState(false);
 	const [error, setError] = useState(false);
-
+	const refreshTasks = () => setRefreshTasksFlag(!refreshTasksFlag);
 	const { filteredTasks, isLoading, requestSortTask, requestFindTask } =
-		useRequestGetTasks();
+		useRequestGetTasks(refreshTasksFlag, refreshTasks);
 
 	const { requestAddTask } = useRequestAddTask(
 		setIsCreating,

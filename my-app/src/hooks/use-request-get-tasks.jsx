@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { URL, PATH } from '../constants/URL-constants';
 
-export const useRequestGetTasks = () => {
+export const useRequestGetTasks = (refreshTasksFlag) => {
 	const [tasks, setTasks] = useState([]);
 	const [sortTasks, setSortTasks] = useState([]);
 	const [filteredTasks, setFilteredTasks] = useState([]);

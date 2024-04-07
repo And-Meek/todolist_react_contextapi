@@ -24,7 +24,6 @@ export const useRequestUpdateTask = (setIsCreating) => {
 	};
 
 	const requestUpdateTask = (target) => {
-		const updateTaskDbRef = ref(db, `tasks/${target.id}`);
 		setIsCreating(true);
 		fetch(`${URL}/${PATH}/${target.id}`, {
 			method: 'PATCH',
