@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { flushSync } from 'react-dom';
+import { PATH, URL } from '../constants/URL-constants';
 
 export const useRequestUpdateTask = (refreshTasks, setIsCreating) => {
 	const [isUpdating, setIsUpdating] = useState(false);
@@ -24,7 +25,7 @@ export const useRequestUpdateTask = (refreshTasks, setIsCreating) => {
 
 	const requestUpdateTask = (target) => {
 		setIsCreating(true);
-		fetch(`http://localhost:3005/tasks/${target.id}`, {
+		fetch(`${URL}/${PATH}/${target.id}`, {
 			method: 'PATCH',
 			headers: { 'Content-Type': 'application/json; charset=utf-8' },
 			body: JSON.stringify({

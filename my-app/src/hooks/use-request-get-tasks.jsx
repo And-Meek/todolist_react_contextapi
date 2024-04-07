@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { URL, PATH } from '../constants/URL-constants';
 
 export const useRequestGetTasks = (refreshTasksFlag) => {
 	const [tasks, setTasks] = useState([]);
@@ -9,7 +10,7 @@ export const useRequestGetTasks = (refreshTasksFlag) => {
 
 	useEffect(() => {
 		setIsLoading(true);
-		fetch('http://localhost:3005/tasks')
+		fetch(`${URL}/${PATH}`)
 			.then((loadedData) => loadedData.json())
 			.then((loadedTasks) => {
 				setTasks(loadedTasks);
@@ -44,9 +45,9 @@ export const useRequestGetTasks = (refreshTasksFlag) => {
 		}
 		setIsSorted(!isSorted);
 	};
+
 	const requestFindTask = ({ target }) => {
 		if (target.value.length !== 0) {
-			console.log('isSorted', isSorted);
 			if (isSorted) {
 				const filteredTasksArray = sortTasks.filter((task) => {
 					return task.title.includes(target.value);

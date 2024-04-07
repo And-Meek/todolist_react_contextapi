@@ -1,3 +1,5 @@
+import { PATH, URL } from '../constants/URL-constants';
+
 export const useRequestAddTask = (
 	setIsCreating,
 	newTask,
@@ -11,7 +13,7 @@ export const useRequestAddTask = (
 			setError(true);
 			setIsCreating(false);
 		} else {
-			fetch('http://localhost:3005/tasks', {
+			fetch(`${URL}/${PATH}`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json; charset=utf-8' },
 				body: JSON.stringify({
