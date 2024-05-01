@@ -1,8 +1,19 @@
-import { useContext } from 'react';
-import { AppContext } from '../../../context';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectIsCreating } from '../../../selectors';
+import { findTask } from '../../../actions/find-task';
+import { sortTask } from '../../../actions/sort-task';
 
 export const FindTask = () => {
-	const { requestFindTask, requestSortTask, isCreating } = useContext(AppContext);
+	const { isCreating } = useSelector(selectIsCreating);
+	const dispatch = useDispatch();
+	const requestFindTask = ({ target }) => {
+		dispatch(findTask(target.value.trim()));
+	};
+
+	const requestSortTask = () => {
+		dispatch(sortTask());
+	};
+
 	return (
 		<div className="searchAndSortMenu">
 			<input
